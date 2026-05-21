@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Clube do Desconto">
+<title>Clube do Desconto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #00C853;
+    --verde-escuro: #009624;
+    --verde-bg: #E8F5E9;
+    --preto: #0D0D0D;
+    --cinza: #F4F4F2;
+    --cinza2: #E8E8E4;
+    --cinza3: #9E9E9E;
+    --branco: #FFFFFF;
+    --laranja: #FF6D00;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cinza);
+    color: var(--preto);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  header {
+    background: var(--preto);
+    padding: 20px 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-badge {
+    width: 40px;
+    height: 40px;
+    background: var(--verde);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--branco);
+    letter-spacing: -0.3px;
+  }
+
+  .header-text p {
+    font-size: 12px;
+    color: var(--cinza3);
+    font-weight: 300;
+  }
+
+  .main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 20px 16px 0;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: var(--cinza2);
+    padding: 4px;
+    border-radius: var(--radius);
+  }
+
+  .tab {
+    padding: 10px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--cinza3);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .tab.active {
+    background: var(--branco);
+    color: var(--preto);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .tab svg { width: 16px; height: 16px; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .card {
+    background: var(--branco);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cinza3);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--cinza3);
+    margin-bottom: 6px;
+  }
+
+  input[type="url"], input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--cinza2);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--preto);
+    background: var(--cinza);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 14px;
+    -webkit-appearance: none;
+  }
+
+  input:focus {
+    border-color: var(--verde);
+    background: var(--branco);
+  }
+
+  input::placeholder { color: var(--cinza3); }
+
+  .btn-gerar {
+    width: 100%;
+    padding: 14px;
+    background: var(--preto);
+    color: var(--branco);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-gerar:active { transform: scale(0.98); }
+
+  .btn-gerar svg { width: 18px; height: 18px; }
+
+  .btn-gerar.loading {
+    background: var(--cinza2);
+    color: var(--cinza3);
+    pointer-events: none;
+  }
+
+  .btn-gerar .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--cinza3);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .resultado { display: none; margin-top: 16px; }
+
+  .preview-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--cinza3);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+
+  .preview-box {
+    background: var(--cinza);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    color: var(--preto);
+    border: 1.5px solid var(--cinza2);
+    min-height: 100px;
+  }
+
+  .btn-copiar {
+    width: 100%;
+    padding: 13px;
+    margin-top: 10px;
+    background: var(--verde);
+    color: var(--branco);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-copiar:active { transform: scale(0.98); background: var(--verde-escuro); }
+  .btn-copiar svg { width: 16px; height: 16px; }
+
+  .btn-copiar.copiado {
+    background: var(--verde-escuro);
+  }
+
+  .kit-item {
+    background: var(--branco);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 12px;
+  }
+
+  .kit-tipo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+
+  .kit-tipo.whats { background: #E8F5E9; color: #2E7D32; }
+  .kit-tipo.grupo { background: #E3F2FD; color: #1565C0; }
+  .kit-tipo.amigo { background: #FFF3E0; color: #E65100; }
+  .kit-tipo.bio { background: #F3E5F5; color: #6A1B9A; }
+
+  .kit-texto {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--preto);
+    background: var(--cinza);
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--cinza2);
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+  }
+
+  .dica {
+    background: #FFF8E1;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .dica-icon { font-size: 18px; flex-shrink: 0; }
+
+  .dica p {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #5D4037;
+  }
+
+  .dica strong { font-weight: 600; }
+
+  .erro {
+    background: #FFEBEE;
+    color: #C62828;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  @media (max-width: 400px) {
+    .card { padding: 16px; }
+    .kit-item { padding: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-badge">🏷️</div>
+    <div class="header-text">
+      <h1>Clube do Desconto</h1>
+      <p>Gerador de posts + kit de divulgação</p>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+
+  <div class="tabs">
+    <button class="tab active" onclick="trocarAba('gerador', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Gerar post
+    </button>
+    <button class="tab" onclick="trocarAba('kit', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+      Divulgação
+    </button>
+  </div>
+
+  <div id="gerador" class="section active">
+
+    <div class="dica">
+      <span class="dica-icon">💡</span>
+      <p><strong>Como usar:</strong> cole o link do produto do Mercado Livre, informe o cupom se tiver, e a IA monta o post pronto para copiar e colar no WhatsApp.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Dados do produto</div>
+
+      <label>Link do produto (Mercado Livre)</label>
+      <input type="url" id="link-input" placeholder="https://www.mercadolivre.com.br/..." />
+
+      <label>Cupom de desconto (opcional)</label>
+      <input type="text" id="cupom-input" placeholder="Ex: PARACASA" style="text-transform:uppercase;" />
+
+      <label>Seu link de afiliado (opcional)</label>
+      <input type="url" id="afiliado-input" placeholder="Cole seu link de afiliado do ML..." />
+
+      <button class="btn-gerar" id="btn-gerar" onclick="gerarPost()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Gerar post com IA
+      </button>
+
+      <div class="erro" id="erro-msg"></div>
+
+      <div class="resultado" id="resultado">
+        <div class="preview-label">Preview do post</div>
+        <div class="preview-box" id="post-preview"></div>
+        <button class="btn-copiar" id="btn-copiar" onclick="copiarPost()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copiar e colar no WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="kit" class="section">
+
+    <div class="dica">
+      <span class="dica-icon">📢</span>
+      <p><strong>Como usar:</strong> copie os textos abaixo e cole onde quiser para divulgar seu grupo. Substitua <strong>[link do grupo]</strong> pelo link real do seu grupo no WhatsApp.</p>
+    </div>
+
+    <div class="kit-item">
+      <div class="kit-tipo whats">📱 Status do WhatsApp</div>
+      <div class="kit-texto" id="txt-status">Entre no Clube do Desconto e receba as melhores ofertas do Mercado Livre direto no seu WhatsApp!
+
+Só quem é do clube pega os preços secretos e cupons exclusivos 🏷️
+
+Entra agora: [link do grupo]</div>
+      <button class="btn-copiar" onclick="copiarTexto('txt-status', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copiar
+      </button>
+    </div>
+
+    <div class="kit-item">
+      <div class="kit-tipo grupo">👥 Grupos e Facebook</div>
+      <div class="kit-texto" id="txt-grupo">Pessoal, criei um grupo só com ofertas reais do Mercado Livre. Sem enrolação, só produto bom com desconto de verdade e cupons 👊
+
+Se quiser entrar no Clube do Desconto é só clicar:
+[link do grupo]</div>
+      <button class="btn-copiar" onclick="copiarTexto('txt-grupo', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copiar
+      </button>
+    </div>
+
+    <div class="kit-item">
+      <div class="kit-tipo amigo">💬 Para amigos no chat</div>
+      <div class="kit-texto" id="txt-amigo">Oi! Criei um grupo de ofertas do Mercado Livre, sempre com os melhores descontos e cupons exclusivos 🏷️
+
+Quer entrar? É só no link:
+[link do grupo]</div>
+      <button class="btn-copiar" onclick="copiarTexto('txt-amigo', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copiar
+      </button>
+    </div>
+
+    <div class="kit-item">
+      <div class="kit-tipo bio">📋 Descrição do grupo</div>
+      <div class="kit-texto" id="txt-bio">Bem-vindo ao Clube do Desconto! 🏷️
+
+Aqui você recebe as melhores ofertas do Mercado Livre com cupons e descontos exclusivos, todo dia.
+
+Só admins postam para manter a qualidade. Aproveite e indique para os amigos!</div>
+      <button class="btn-copiar" onclick="copiarTexto('txt-bio', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copiar
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function trocarAba(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+async function gerarPost() {
+  const link = document.getElementById('link-input').value.trim();
+  const cupom = document.getElementById('cupom-input').value.trim().toUpperCase();
+  const afiliado = document.getElementById('afiliado-input').value.trim();
+  const erroEl = document.getElementById('erro-msg');
+  const btnGerar = document.getElementById('btn-gerar');
+
+  erroEl.style.display = 'none';
+
+  if (!link || !link.includes('mercadolivre')) {
+    erroEl.textContent = '⚠️ Cole um link válido do Mercado Livre.';
+    erroEl.style.display = 'block';
+    return;
+  }
+
+  btnGerar.classList.add('loading');
+  btnGerar.innerHTML = '<div class="spinner"></div> Gerando post...';
+  document.getElementById('resultado').style.display = 'none';
+
+  const linkFinal = afiliado || link;
+  const cupomLinha = cupom ? `\nCupom: ${cupom} ⚠️` : '';
+
+  const prompt = `Você é especialista em criar posts de promoções para grupos de WhatsApp no Brasil, no estilo de grupos como "Só Promos Originais".
+
+Link do produto no Mercado Livre: ${link}
+
+Crie um post EXATAMENTE neste formato (texto puro, sem asteriscos, sem markdown):
+
+[TITULO CHAMATIVO EM MAIUSCULO — ex: RENOVE SUA COZINHA]
+
+[Nome completo do produto com variações]
+
+de R$ [preço original] por R$ [preço promocional] 👊${cupomLinha}
+
+Loja oficial no Mercado Livre:
+${linkFinal}
+
+Instruções:
+- O título deve ser uma frase curta, impactante, toda em MAIUSCULO
+- Deduza o produto pelo link e crie preços realistas se não souber os reais
+- Sem hashtags, asteriscos ou markdown
+- Tom direto, brasileiro, vendedor
+- Responda APENAS com o post, nada mais, nenhuma introdução`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) throw new Error('Erro na API');
+
+    const data = await res.json();
+    const texto = data.content.map(i => i.text || '').join('').trim();
+
+    document.getElementById('post-preview').textContent = texto;
+    document.getElementById('resultado').style.display = 'block';
+    document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  } catch(e) {
+    erroEl.textContent = '❌ Erro ao gerar post. Verifique sua conexão e tente novamente.';
+    erroEl.style.display = 'block';
+  }
+
+  btnGerar.classList.remove('loading');
+  btnGerar.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Gerar post com IA`;
+}
+
+function copiarPost() {
+  const texto = document.getElementById('post-preview').textContent;
+  copiarTextoGenerico(texto, document.getElementById('btn-copiar'));
+}
+
+function copiarTexto(id, btn) {
+  const texto = document.getElementById(id).textContent;
+  copiarTextoGenerico(texto, btn);
+}
+
+function copiarTextoGenerico(texto, btn) {
+  navigator.clipboard.writeText(texto).then(() => {
+    const original = btn.innerHTML;
+    btn.classList.add('copiado');
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copiado!`;
+    setTimeout(() => {
+      btn.classList.remove('copiado');
+      btn.innerHTML = original;
+    }, 2500);
+  }).catch(() => {
+    const range = document.createRange();
+    const el = document.createElement('textarea');
+    el.value = texto;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    const original = btn.innerHTML;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copiado!`;
+    setTimeout(() => btn.innerHTML = original, 2500);
+  });
+}
+</script>
+</body>
+</html>
